@@ -36,4 +36,71 @@ pip install --upgrade -r requirements.txt
 pip install xformers==0.0.23.post1 --index-url https://download.pytorch.org/whl/cu118
 
 accelerate config
-  
+
+##1、开始训练
+1.收集照片8张，包括正脸照片4张（3张佩戴眼镜，1张未佩戴）  侧脸照片四张（左右脸各2张）
+ 
+
+##2.处理照片：使用工具Photosho对照片进行抠图，去除背景
+
+##3.对数据集进行处理
+3.1 使用了BLIP生成captions
+脚本：python "D:\BaiduNetdiskDownload\sd-scripts-main\finetune\make_captions.py" "D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz"
+
+
+
+
+##3.2 使用了WD14Tagger 生成标签（因为比较精确）
+脚本：python finetune/tag_images_by_wd14_tagger.py --onnx --repo_id SmilingWolf/wd-swinv2-tagger-v3 --batch_size 4 D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk-1
+
+
+
+ 
+##3.3 将 captions 与标签进行预处理形成 metadata.json 元数据文件并且对文件进行清洗
+脚本：
+python "D:\BaiduNetdiskDownload\sd-scripts-main\finetune\merge_dd_tags_to_metadata.py" --full_path "D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz" --in_json "D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz\metadata.json" "D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz\metadata.json"
+
+python "D:\BaiduNetdiskDownload\sd-scripts-main\finetune\clean_captions_and_tags.py" "D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz\metadata.json" "meta clean.json"
+
+图1.4 清洗的元文件
+4.训练阶段：
+4.1 数据集配置如下：
+[general]
+enable_bucket = true                        # 是否使用Aspect Ratio Bucketing
+
+[[datasets]]
+resolution = 512                            # 训练分辨率
+batch_size = 8                             # 批次大小
+
+[[datasets.subsets]]
+image_dir = 'D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz'                     # 指定包含训练图像的文件夹
+metadata_file = 'D:/BaiduNetdiskDownload/sd-scripts-main/picture/sk/5_zkz/metadata.json'
+#class_tokens = 'sk'                # 指定标识符类
+#caption_extension = '.txt'            # 若使用txt文件,更改此项
+ num_repeats = 10         
+4.2 训练脚本参数如下：
+accelerate launch --num_cpu_threads_per_process 1 train_network.py
+    --pretrained_model_name_or_path="D:\BaiduNetdiskDownload\sd-webui-aki\sd-webui-aki-v4.9.1\models\Stable-diffusion\v1-5-pruned.safetensors"
+    --dataset_config="D:\BaiduNetdiskDownload\sd-scripts-main\Lora.toml"
+    --output_dir="D:\BaiduNetdiskDownload\sd-scripts-main\lora_sk"
+    --output_name="sk"
+    --save_model_as=safetensors
+    --prior_loss_weight=1.0
+    --max_train_steps=400
+    --learning_rate=1e-4
+    --optimizer_type="AdamW8bit"
+    --xformers
+    --mixed_precision="fp16"
+    --cache_latents
+    --gradient_checkpointing
+    --save_every_n_epochs=1
+    --network_module=networks.lora
+
+
+4.3 训练阶段：
+
+
+4.4训练得到的Lora会在文件夹同一路径sk-Lora中保存
+
+
+
