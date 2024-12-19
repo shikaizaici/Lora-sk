@@ -1,0 +1,52 @@
+model_train_type = "sd-lora"
+pretrained_model_name_or_path = "D:/BaiduNetdiskDownload/sd-webui-aki/sd-webui-aki-v4.9.1/models/Stable-diffusion/v1-5-pruned.safetensors"
+v2 = false
+train_data_dir = "C:/Users/13457/Desktop/sk"
+prior_loss_weight = 1
+resolution = "512,512"
+enable_bucket = true
+min_bucket_reso = 256
+max_bucket_reso = 1024
+bucket_reso_steps = 64
+output_name = "sk"
+output_dir = "D:/BaiduNetdiskDownload/sd-scripts-main/lora_sk"
+save_model_as = "safetensors"
+save_precision = "fp16"
+save_every_n_epochs = 1
+max_train_epochs = 10
+train_batch_size = 1
+gradient_checkpointing = false
+network_train_unet_only = false
+network_train_text_encoder_only = false
+learning_rate = 0.0001
+unet_lr = 0.0005
+text_encoder_lr = 0.0001
+lr_scheduler = "cosine_with_restarts"
+lr_warmup_steps = 82
+lr_scheduler_num_cycles = 3
+optimizer_type = "AdamW8bit"
+min_snr_gamma = 5
+network_module = "networks.lora"
+network_dim = 128
+network_alpha = 64
+log_with = "tensorboard"
+log_prefix = "sk-lora-train-bilbil"
+logging_dir = "./logs"
+caption_extension = ".txt"
+shuffle_caption = false
+weighted_captions = false
+keep_tokens = 0
+max_token_length = 75
+seed = 42
+clip_skip = 2
+mixed_precision = "fp16"
+xformers = true
+lowram = false
+cache_latents = true
+cache_latents_to_disk = true
+persistent_data_loader_workers = true
+ddp_timeout = 0
+python tag_images_by_wd14_tagger.py --batch_size 4 D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz\sk-1.jpg
+python finetune/tag_images_by_wd14_tagger.py  --batch_size 4 D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz\sk-1.jpg
+--onnx --repo_id <model repo id>
+python finetune/tag_images_by_wd14_tagger.py --onnx --repo_id SmilingWolf/wd-swinv2-tagger-v3 --batch_size 4 D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk-1

@@ -1,0 +1,13 @@
+[general]
+enable_bucket = true                        # 是否使用Aspect Ratio Bucketing
+
+[[datasets]]
+resolution = 512                            # 训练分辨率
+batch_size = 8                             # 批次大小
+
+[[datasets.subsets]]
+image_dir = 'D:\BaiduNetdiskDownload\sd-scripts-main\picture\sk\5_zkz'                     # 指定包含训练图像的文件夹
+metadata_file = 'D:/BaiduNetdiskDownload/sd-scripts-main/picture/sk/5_zkz/metadata.json'
+#class_tokens = 'sk'                # 指定标识符类
+#caption_extension = '.txt'            # 若使用txt文件,更改此项
+ num_repeats = 10                         # 训练图像的重复次数
